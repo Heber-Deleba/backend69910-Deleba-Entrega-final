@@ -6,7 +6,7 @@ import { __dirname } from "../path.js";
 import ProductManager from "../managers/product.manager.js";
 const productManager = new ProductManager(`${__dirname}/db/products.json`);
 
-import {productValidator} from '../middlewares/productsValidator.js'
+import {productValidator} from '../middlewares/productValidator.js'
 
 router.get('/', async(req, res) => {
     try {
@@ -76,3 +76,12 @@ router.delete('/', async(req, res)=>{
 });
 
 export default router;
+
+
+
+
+
+
+
+
+

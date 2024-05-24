@@ -6,14 +6,14 @@ import { __dirname } from "../path.js";
 const cartManager = new CartManager(`${__dirname}/db/carts.json`);
 
 router.post("/:idCart/product/:idProd", async (req, res, next) => {
-    try {
+   try {
       const { idProd } = req.params;
       const { idCart } = req.params;
       const response = await cartManager.saveProductToCart(idCart, idProd);
       res.json(response);
-    } catch (error) {
+   } catch (error) {
     next(error);
-    }
+   }
 });
 
 router.post("/", async (req, res) => {

@@ -6,6 +6,6 @@ export const productValidator = (req, res, next) => {
         req.body.price === undefined ||
         req.body.stock === undefined ||
         req.body.category === undefined
-    ) res.status(404).json({ msg: 'invalid body'});
+    ) res.status(404).json({ msg: 'Invalid body' });
     else next()
 }
