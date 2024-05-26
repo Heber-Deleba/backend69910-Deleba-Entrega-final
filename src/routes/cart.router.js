@@ -1,36 +1,28 @@
-import { Router } from "express";
+import { Router } from 'express';
+import { getCarts, addCart, deleteCart } from '../managers/cart.manager.js';
+
 const router = Router();
 
-import CartManager from "../managers/cart.manager.js";
-import { __dirname } from "../path.js";
-const cartManager = new CartManager(`${__dirname}/db/carts.json`);
-
-router.post("/:idCart/product/:idProd", async (req, res, next) => {
-   try {
-      const { idProd } = req.params;
-      const { idCart } = req.params;
-      const response = await cartManager.saveProductToCart(idCart, idProd);
-      res.json(response);
-   } catch (error) {
-    next(error);
-   }
+router.get('/', (req, res) => {
+  const carts = getCarts();
+  res.json(carts);
 });
 
-router.post("/", async (req, res) => {
-  try {
-    res.json(await cartManager.createCart());
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
+router.post('/', (req, res) => {
+  const cart = req.body;
+  const newCart = addCart(cart);
+  res.status(201).json(newCart);
 });
 
-router.get("/:idCart", async (req, res) => {
-  try {
-    const {idCart} = req.params
-    res.json(await cartManager.getCartById(idCart))
-  } catch (error) {
-    console.log(error);
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  const success = deleteCart(id);
+  if (success) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
   }
 });
 
 export default router;
+

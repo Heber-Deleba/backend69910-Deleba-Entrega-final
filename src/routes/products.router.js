@@ -1,81 +1,58 @@
-import { Router } from "express";
+import { Router } from 'express';
+import { getProducts, addProduct, deleteProduct } from '../managers/product.manager.js';
+
 const router = Router();
 
-import { __dirname } from "../path.js";
 
-import ProductManager from "../managers/product.manager.js";
-const productManager = new ProductManager(`${__dirname}/db/products.json`);
+let allProducts = [];
 
-import {productValidator} from '../middlewares/productValidator.js'
-
-router.get('/', async(req, res) => {
-    try {
-        const { limit } = req.query;
-        console.log(limit);
-        const products = await productManager.getProducts(limit);
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-        console.log(error);
-    }
+//home
+router.get('/', (req, res) => {
+  res.render('home', { products: getProducts() });
 });
 
-router.get("/:idProd", async (req, res) => {
-    try {
-      const { idProd } = req.params;
-      const product = await productManager.getProductById(idProd);
-      if (!product) res.status(404).json({ msg: "product not found" });
-      else res.status(200).json(product);
-    } catch (error) {
-      res.status(500).json({ msg: error.message });
-    }
-  });
-
-
-router.post('/', productValidator, async (req, res)=>{
-    try {
-        console.log(req.body);
-        const product = req.body;
-        const newProduct = await productManager.createProduct(product);
-        res.json(newProduct);
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
+//lista de productos en tiempo real
+router.get('/realtimeproducts', (req, res) => {
+  res.render('realTimeProducts', { products: getProducts() });
 });
 
-router.put("/:idProd", async (req, res) => {
-    try {
-      const { idProd } = req.params;
-      const prodUpd = await productManager.updateProduct(req.body, idProd);
-      if (!prodUpd) res.status(404).json({ msg: "Error updating prod" });
-      res.status(200).json(prodUpd);
-    } catch (error) {
-      res.status(500).json({ msg: error.message });
-    }
-  });
+//formulario de agregar productos
+router.get('/add', (req, res) => {
+  res.render('addProduct');
+});
 
-router.delete("/:idProd", async (req, res) => {
-    try {
-      const { idProd } = req.params;
-      const delProd = await productManager.deleteProduct(idProd);
-      if(!delProd) res.status(404).json({ msg: "Error delete product" });
-      else res.status(200).json({msg : `product id: ${idProd} deleted successfully`})
-    } catch (error) {
-      res.status(500).json({ msg: error.message });
-    }
-  });
+// agregar un producto
+router.post('/', (req, res) => {
+  const product = req.body;
+  const newProduct = addProduct(product);
 
-router.delete('/', async(req, res)=>{
-    try {
-        await productManager.deleteFile();
-        res.send('products deleted successfully')
-    } catch (error) {
-        res.status(404).json({ message: error.message });
+  allProducts.push(newProduct); 
+  const io = req.app.get('io');
 
-    }
+  io.emit('productList', allProducts);
+  res.redirect('/products'); 
+});
+
+
+
+//eliminar un producto
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  const success = deleteProduct(id);
+  const io = req.app.get('io');
+  
+  if (success) {
+    io.emit('productList', getProducts());
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
 });
 
 export default router;
+
+
+
 
 
 
