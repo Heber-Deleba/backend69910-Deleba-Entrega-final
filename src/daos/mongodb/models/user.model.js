@@ -1,3 +1,4 @@
+
 import { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
@@ -10,4 +11,4 @@ const userSchema = new Schema({
   cart: { type: Schema.Types.ObjectId, ref: "cart" },
 });
 
-export const userModel = model("user", userSchema);
+export const userModel = model("user", userSchema); 

@@ -1,4 +1,22 @@
 import { Schema, model } from "mongoose";
+
+const productSchema = new Schema(
+  {
+    name: { type: String, require: true },
+    description: { type: String, require: true },
+    price: { type: Number, require: true },
+    image: { type: String, require: true },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const productModel = model("product", productSchema);
+
+
+/*
+import { Schema, model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
 
@@ -16,4 +34,4 @@ export const productSchema = new Schema({
 
 productSchema.plugin(mongoosePaginate);
 
-export const ProductModel = model(productCollectionName, productSchema);
+export const ProductModel = model(productCollectionName, productSchema); */
