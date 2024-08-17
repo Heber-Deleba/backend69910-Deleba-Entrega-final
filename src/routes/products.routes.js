@@ -54,42 +54,67 @@ router.post(
   }
 );
 
+
+// Agregar producto (solo admin)
+router.post("/", authorizations(['admin']), validate(productDto), async (req, res) => {
+  try {
+    const newProduct = await productModel.create(req.body);
+    res.status(201).json({
+      message: 'Producto creado exitosamente',
+      product: newProduct
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error al crear el producto',
+      details: error.message
+    });
+  }
+});
+
+// Actualizar producto (solo admin)
+router.put("/:id", authorizations(['admin']), validate(productDto), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedProduct = await productModel.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Producto actualizado exitosamente',
+      product: updatedProduct
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error al actualizar el producto',
+      details: error.message
+    });
+  }
+});
+
+// Eliminar producto (solo admin)
+router.delete("/:id", authorizations(['admin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedProduct = await productModel.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Producto eliminado exitosamente'
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error al eliminar el producto',
+      details: error.message
+    });
+  }
+});
+
 export default router;
-
-
-
-
-
-
-/*
-
-import { Router } from "express";
-import * as controller from "../controllers/product.controllers.js";
-
-
-const router = Router();
-
-
-
-router.get("/", controller.getAll);
-
-router.get("/:id", controller.getById);
-
-router.post("/", controller.create);
-
-router.put("/:id", controller.update);
-
-router.delete("/:id", controller.remove);
-
-export default router; */
-
-
-
-
-
-
-
-
 
 
 

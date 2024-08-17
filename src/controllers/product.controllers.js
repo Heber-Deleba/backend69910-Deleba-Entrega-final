@@ -66,18 +66,4 @@ export const update = async (req, res, next) => {
   } catch (error) {
     next(error.message);
   }
-};
-
-
-
-
-export const remove = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const prodDel = await service.remove(id);
-    if (!prodDel) res.status(404).json({ msg: "Error delete product!" });
-    else res.status(200).json({ msg: `Product id: ${id} deleted` });
-  } catch (error) {
-    next(error.message);
-  }
-};
+};                   

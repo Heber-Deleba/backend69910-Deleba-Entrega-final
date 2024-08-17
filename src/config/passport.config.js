@@ -1,39 +1,32 @@
-import passport from "passport";
-import local from "passport-local";
-import jwt from "passport-jwt";
-import { userModel } from "../daos/mongodb/models/user.model.js";
-import { comparePassword } from "../utils/hash.js";
-import { config } from "./config.js";
+import passport from 'passport';
+import local from 'passport-local';
+import jwt from 'passport-jwt';
+import { userModel } from '../daos/mongodb/models/user.model.js'; // Asegúrate de la ruta correcta
+import { createHash, comparePassword } from '../utils/hash.js';
+import { config } from './config.js';
 
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 
 function initializePassport() {
-  // Login Strategy
+  // Login
   passport.use(
-    "login",
+    'login',
     new LocalStrategy(
       {
-        usernameField: "email",
+        usernameField: 'email',
       },
       async (email, password, done) => {
         try {
           const user = await userModel.findOne({ email });
-
           if (!user) {
-            return done(null, false, { message: "Usuario no encontrado" });
+            return done(null, false, { message: 'Usuario no encontrado' });
           }
-
-          const isPasswordCorrect = await comparePassword(
-            password,
-            user.password
-          );
-
+          const isPasswordCorrect = await comparePassword(password, user.password);
           if (!isPasswordCorrect) {
-            return done(null, false, { message: "Contraseña incorrecta" });
+            return done(null, false, { message: 'Contraseña incorrecta' });
           }
-
           return done(null, user);
         } catch (error) {
           done(error);
@@ -42,43 +35,40 @@ function initializePassport() {
     )
   );
 
+  // Register
   passport.use(
-    "register",
+    'register',
     new LocalStrategy(
       {
-        usernameField: "email",
+        usernameField: 'email',
         passReqToCallback: true,
       },
       async (req, email, password, done) => {
         try {
           const { first_name, last_name, age } = req.body;
-
           const userExists = await userModel.findOne({ email });
-
           if (userExists) {
-            return done(null, false, { message: "El usuario ya existe" });
+            return done(null, false, { message: 'El usuario ya existe' });
           }
-
-          const hashPassword = await createHash(password);
-
+          const hashedPassword = await createHash(password);
           const user = await userModel.create({
             first_name,
             last_name,
             email,
             age,
-            password: hashPassword,
+            password: hashedPassword,
           });
-
           return done(null, user);
         } catch (error) {
-          done(error);
+          return done(error);
         }
       }
     )
   );
 
+  // JWT 
   passport.use(
-    "jwt",
+    'jwt',
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
@@ -86,12 +76,10 @@ function initializePassport() {
       },
       async (payload, done) => {
         try {
-          const user = await userModel.find({ email: payload.email });
-
+          const user = await userModel.findOne({ email: payload.email });
           if (!user) {
-            return done(null, false, { message: "No se encontró el usuario" });
+            return done(null, false, { message: 'No se encontró el usuario' });
           }
-
           return done(null, user);
         } catch (error) {
           done(error);
@@ -117,9 +105,8 @@ function initializePassport() {
 function cookieExtractor(req) {
   let token = null;
   if (req && req.cookies) {
-    token = req.cookies["token"];
+    token = req.cookies['token'];
   }
-
   return token;
 }
 
@@ -171,92 +158,3 @@ export { initializePassport };
 
 
 
-
-
-
-
-
-
-
-
-/*
-
-import passport from "passport";
-import local from "passport-local";
-import jwt from "jsonwebtoken";
-import jwtStrategy from "passport-jwt";
-import { userModel } from "../daos/mongodb/models/user.model.js";
-import { comparePassword } from "../utils/hash.js";
-
-const LocalStrategy = local.Strategy;
-const JWTStrategy = jwtStrategy.Strategy;
-const ExtractJWT = jwtStrategy.ExtractJwt;
-
-const initializePassport = () => {
-  // Login Strategy
-  passport.use(
-    "login",
-    new LocalStrategy(
-      { usernameField: "email", passReqToCallback: true },
-      async (req, email, password, done) => {
-        try {
-          const user = await userModel.findOne({ email });
-
-          if (!user) {
-            return done(null, false, { message: "Usuario no encontrado" });
-          }
-
-          if (!(await comparePassword(password, user.password))) {
-            return done(null, false, { message: "Contraseña incorrecta" });
-          }
-
-          return done(null, user);
-        } catch (error) {
-          done(error);
-        }
-      }
-    )
-  );
-
-  passport.serializeUser((user, done) => {
-    done(null, user._id);
-  });
-
-  passport.deserializeUser(async (id, done) => {
-    try {
-      const user = await userModel.findById(id);
-      done(null, user);
-    } catch (error) {
-      done(error);
-    }
-  });
-
-  passport.use(
-    "jwt",
-    new JWTStrategy(
-      {
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: "s3cr3t",
-      },
-      async (payload, done) => {
-        try {
-          return done(null, payload);
-        } catch (error) {
-          return done(error);
-        }
-      }
-    )
-  );
-};
-
-function cookieExtractor(req) {
-  let token = null;
-  if (req && req.cookies) {
-    token = req.cookies["token"];
-  }
-
-  return token;
-}
-
-export { initializePassport };
-*/
