@@ -6,7 +6,7 @@ export const createTicket = async (ticketData) => {
     return newTicket;
   } catch (error) {
     console.error("Error creating ticket:", error);
-    throw new Error("Error creating ticket");
+    throw error;
   }
 };
 
@@ -16,7 +16,7 @@ export const getTicketById = async (ticketId) => {
     return ticket;
   } catch (error) {
     console.error("Error getting ticket by ID:", error);
-    throw new Error("Error getting ticket");
+    throw error;
   }
 };
 
@@ -29,3 +29,8 @@ export const getAllTickets = async () => {
     throw new Error("Error getting tickets");
   }
 };
+
+
+
+
+

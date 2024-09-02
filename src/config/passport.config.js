@@ -1,7 +1,7 @@
 import passport from 'passport';
 import local from 'passport-local';
 import jwt from 'passport-jwt';
-import { userModel } from '../daos/mongodb/models/user.model.js'; // Asegúrate de la ruta correcta
+import { userModel } from '../daos/mongodb/models/user.model.js'; 
 import { createHash, comparePassword } from '../utils/hash.js';
 import { config } from './config.js';
 

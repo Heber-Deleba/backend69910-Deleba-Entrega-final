@@ -55,7 +55,7 @@ router.post(
 );
 
 
-// Agregar producto (solo admin)
+
 router.post("/", authorizations(['admin']), validate(productDto), async (req, res) => {
   try {
     const newProduct = await productModel.create(req.body);
@@ -71,7 +71,7 @@ router.post("/", authorizations(['admin']), validate(productDto), async (req, re
   }
 });
 
-// Actualizar producto (solo admin)
+
 router.put("/:id", authorizations(['admin']), validate(productDto), async (req, res) => {
   try {
     const { id } = req.params;
@@ -93,7 +93,7 @@ router.put("/:id", authorizations(['admin']), validate(productDto), async (req, 
   }
 });
 
-// Eliminar producto (solo admin)
+
 router.delete("/:id", authorizations(['admin']), async (req, res) => {
   try {
     const { id } = req.params;

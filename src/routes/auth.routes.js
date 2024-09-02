@@ -5,13 +5,14 @@ import { authDto } from '../dtos/auth.dto.js';
 import { generateToken } from '../utils/jwt.js';
 import passport from 'passport';
 import { userDto } from '../dtos/user.dto.js';
+import { createUserDto, updateUserDto } from '../dtos/user.dto.js';
 
 const router = Router();
 
 router.post(
   '/login',
   validate(authDto),
-  passport.authenticate('login', { session: false }), // Asegúrate de desactivar sesiones para JWT
+  passport.authenticate('login', { session: false }), 
   async (req, res) => {
     try {
       const payload = {
@@ -36,7 +37,7 @@ router.post(
 router.post(
   '/register',
   validate(userDto),
-  passport.authenticate('register', { session: false }), // Asegúrate de desactivar sesiones para JWT
+  passport.authenticate('register', { session: false }), 
   async (req, res) => {
     try {
       res.status(201).json({
