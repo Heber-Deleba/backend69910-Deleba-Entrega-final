@@ -16,8 +16,8 @@ export const config = {
     },
   },
   sms: {
-    accountSid: 'AC6a2246f44c63b89385017ec9be0748da' ,
-    authToken:'9f599a751f14c333f70114afd8adef66' ,
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
     phoneNumber: process.env.TWILIO_PHONE_NUMBER,
   },
 
