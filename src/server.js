@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import mongoose from "mongoose";
 import morgan from 'morgan';
 import productsRoutes from './routes/products.routes.js';
@@ -13,6 +14,8 @@ import { initializePassport } from "./config/passport.config.js";
 import jwt from "jsonwebtoken";
 import { config } from "./config/config.js";
 import routes from "./routes/index.js";
+import mocksRouter from './routes/mocks.router.js';
+
 
 const app = express();
 const PORT = config.PORT || 8080; 
@@ -42,6 +45,13 @@ app.use(cookieParser());
 
 
 
+// Configuración de sesiones
+app.use(session({
+  secret: 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } 
+}));
 
 
 // Passport config
@@ -55,6 +65,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use('/products', productsRoutes);
 app.use('/carts', cartRouter);
+app.use('/api/mocks', mocksRouter);
+
 
 app.use(errorHandler);
 
