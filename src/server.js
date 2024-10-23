@@ -15,6 +15,8 @@ import jwt from "jsonwebtoken";
 import { config } from "./config/config.js";
 import routes from "./routes/index.js";
 import mocksRouter from './routes/mocks.router.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.config.js';
 
 
 const app = express();
@@ -73,6 +75,10 @@ app.use(errorHandler);
 app.get('/', (req, res) => {
   res.send('Bienvenido a la API'); 
 });
+
+
+// Añadir ruta para la documentación de Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 // Start server

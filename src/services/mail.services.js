@@ -41,6 +41,23 @@ class MailService {
   }
 
   
+  async sendMail({ to, subject, type }) {
+    const message = {
+      from: config.mailer.auth.user, 
+      to,
+      subject,
+      html: this.getMessageTemplate(type, to), 
+    };
+
+    try {
+      await this.transporter.sendMail(message);
+      console.log('Correo enviado exitosamente');
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      throw new Error('No se pudo enviar el correo'); 
+    }
+  }
 }
+
 
 export const mailService = new MailService();
